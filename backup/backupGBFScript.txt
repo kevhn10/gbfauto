@@ -1,0 +1,38 @@
+CoordMode, Mouse, Screen
+LoopRunning := 0
+
+RaidMenu := [{x: 2250, y: -280}, {x: 1820, y: 300}, {x: 1570, y: 560}, {x: 1760, y: 560}]
+	  ; [{1st Raid}, {ID BUTTON}, {SEARCH BAR}, {JOIN RAID}, {OK BUTTON}]
+Summons := [{x: 1650, y: 510}, {x: 1650, y: 640}, {x: 1650, y: 760}]
+Skill := [{x: 1760, y: 730}, {x: 1470, y: 600}, {x: 1570, y: 645}, {x: 1660, y: 645}]
+	; [{MC}, {MCHSK1}, {MCHSK2}, {MCHSK3}]
+\::
+	Loop % Coords.Length(){		       ; Cycle through all coordinates CHANGE THIS!!!!!!!!!!!!!!!!!!!!
+			x := RaidMenu[A_Index].x ; Pull the coordinates out of the array
+			y := RaidMenu[A_Index].y
+			MouseClick, , x, y     ; *CLICK*
+			if (A_Index = 1){      ; first click in the sequence
+				Sleep 1000
+			}
+			if(A_Index = 3){
+				MouseClick, , x, y
+				Send ^a
+				Send ^v{Enter}
+			}
+			if(A_Index = 4){       ; SUMMON Selection Page
+				Random, n, 1, 3 ; random # between 1-3, grab SUMMON coordinates
+				a := Summons[n].x
+				b := Summons[n].y
+				Sleep 2500
+				MouseClick, , a, b
+				Sleep 2500
+			}
+			if(A_Index = 5){
+				Sleep 6200
+				MouseClick, , x, y 	
+			}
+			if(A_Index > 5){
+				Sleep 1000
+			}
+	}
+	return
