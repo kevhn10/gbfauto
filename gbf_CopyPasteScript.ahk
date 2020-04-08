@@ -51,7 +51,7 @@ AngelHellList := [{x: 1800, y: 565}] 		; Must hit End to scroll to end of web pa
 	Gosub PartyReady		; Ready Party, wait and select OK to ready party
 ;Gosub mchAutoOugi 		; Specifically for Mechanic class, can add more detailed turns later. ; contains party OK, !@CHANGE@!
 	TeamRotation(1, 1, 1, 0, 0) 	; (MC*MEMBER* , skill1, skill2, nothing, nothing)
-	Sleep 2000 
+	TeamRotation(4, 0, 1, 0, 0)
 	Gosub autoAttack  		; After MCH OUGI -> AUTOATTACK
 	return
 
@@ -202,7 +202,7 @@ randomDelay(x){
 PartyReady: 	; PartyOK := [{x: 1760, y: 730}]
 	Sleep randomDelay(1400)
 	MouseClick, , PartyOK[1].x, PartyOK[1].y
-	Sleep 5500
+	Sleep 5700
 	Return
 
 ; !! Class Specific !! Mechanic Rotation
@@ -211,7 +211,7 @@ mchAutoOugi: 						; Uses MECHANIC skills = Activate -> Cusomized Action -> Auto
 		c := mechanicRotation[A_Index].x
 		d := mechanicRotation[A_Index].y
 		if(A_Index = 1){			; Party select *OK BUTTON*
-			Sleep 1600
+			Sleep randomDelay(1600)
 			MouseClick, , c, d
 		}
 		if(StrikeTime = 1 && A_Index = 1){ 	; If Strike time. Attack immediately, refresh.
@@ -222,10 +222,10 @@ mchAutoOugi: 						; Uses MECHANIC skills = Activate -> Cusomized Action -> Auto
 		}
 		if(A_Index = 2){ 			; MC Portrait, for MCH Skills, Check if StrikeTime! Change delay.
 			if(StrikeTime = 1){
-				Sleep 6000 		; Wait for page to refresh, then proceed. 
+				Sleep randomDelay(5800) 		; Wait for page to refresh, then proceed. 
 			}
 			else{
-				Sleep 5800
+				Sleep randomDelay(5800)
 			}
 			MouseClick, , c, d
 		}
@@ -237,7 +237,7 @@ mchAutoOugi: 						; Uses MECHANIC skills = Activate -> Cusomized Action -> Auto
 	if(MemberFour = 1){
 		a := Character[4].x		; Member4 {x: 1700, y: 620}
 		b := Character[4].y
-		Sleep 200
+		Sleep randomDelay(200)
 		MouseClick, , Attack[2].x, Attack[2].y
 		Sleep 200
 		MouseClick, , a, b 			; click portrait
@@ -251,7 +251,6 @@ mchAutoOugi: 						; Uses MECHANIC skills = Activate -> Cusomized Action -> Auto
 
 ; (Member, skill1, skill2, skill3, skill4)
 TeamRotation(Member, skill1, skill2, skill3, skill4){
-
 	global Character
 	global Attack
 	global StrikeTime
@@ -263,7 +262,7 @@ TeamRotation(Member, skill1, skill2, skill3, skill4){
 		MouseClick, , Attack[1].x, Attack[1].y	; *Click* {ATTACK} 
 		Sleep 200
 		send ^{f5}
-		Sleep 6000	
+		Sleep randomDelay(6000)	
 	}
 	if(Member != 1){ 				; Hit back only after MC has been finished
 		sleep 200
@@ -280,11 +279,9 @@ TeamRotation(Member, skill1, skill2, skill3, skill4){
 
 QueueSkill(skill, n){
 	global SkillCoords
-	a := SkillCoords[n].x
-	b := SkillCoords[n].y
 	if(skill = 1){
-		Sleep 100
-		MouseClick, , a, b
+		Sleep randomDelay(100)
+		MouseClick, , SkillCoords[n].x, SkillCoords[n].y
 	}
 }
 
