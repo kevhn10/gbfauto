@@ -205,49 +205,6 @@ PartyReady: 	; PartyOK := [{x: 1760, y: 730}]
 	Sleep 5700
 	Return
 
-; !! Class Specific !! Mechanic Rotation
-mchAutoOugi: 						; Uses MECHANIC skills = Activate -> Cusomized Action -> AutoAttack auto leech.
-	Loop % mechanicRotation.Length(){
-		c := mechanicRotation[A_Index].x
-		d := mechanicRotation[A_Index].y
-		if(A_Index = 1){			; Party select *OK BUTTON*
-			Sleep randomDelay(1600)
-			MouseClick, , c, d
-		}
-		if(StrikeTime = 1 && A_Index = 1){ 	; If Strike time. Attack immediately, refresh.
-			MouseClick, , Attack[1].x, Attack[1].y	; *Click* {ATTACK} 
-			Sleep 200
-			send ^{f5}
-			Sleep 50
-		}
-		if(A_Index = 2){ 			; MC Portrait, for MCH Skills, Check if StrikeTime! Change delay.
-			if(StrikeTime = 1){
-				Sleep randomDelay(5800) 		; Wait for page to refresh, then proceed. 
-			}
-			else{
-				Sleep randomDelay(5800)
-			}
-			MouseClick, , c, d
-		}
-		if(A_Index > 2){			; MC Portrait skills.
-			Sleep 100
-			MouseClick, , c, d
-		}
-	}
-	if(MemberFour = 1){
-		a := Character[4].x		; Member4 {x: 1700, y: 620}
-		b := Character[4].y
-		Sleep randomDelay(200)
-		MouseClick, , Attack[2].x, Attack[2].y
-		Sleep 200
-		MouseClick, , a, b 			; click portrait
-		Sleep 100
-		MouseClick, , skillCoords[2].x, SkillCoords[2].y
-		Sleep 100
-		
-	}
-	
-	Return
 
 ; (Member, skill1, skill2, skill3, skill4)
 TeamRotation(Member, skill1, skill2, skill3, skill4){
@@ -262,7 +219,7 @@ TeamRotation(Member, skill1, skill2, skill3, skill4){
 		MouseClick, , Attack[1].x, Attack[1].y	; *Click* {ATTACK} 
 		Sleep 200
 		send ^{f5}
-		Sleep randomDelay(6000)	
+		Sleep randomDelay(6300)	
 	}
 	if(Member != 1){ 				; Hit back only after MC has been finished
 		sleep 200
