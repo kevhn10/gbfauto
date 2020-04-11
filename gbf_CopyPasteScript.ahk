@@ -1,22 +1,44 @@
 ﻿CoordMode, Mouse, Screen
 
 
-; Set Variables up! 
-StrikeTime := 0 ; ~*!!!!!!!!!!!! StrikeTime !!!!!!!!!!!!!*~
+; Bindings: For most, MUST BE AT RESPECTIVE RAID/QUEST PAGE!	
+;	***ALL BINDINGS CAN BE CHANGED!! IT DOESN'T MATTER! BESIDES , WHICH IS TREASURE PAGE***
+;	L = MOST IMPORTANT BINDING, REFRESHED SCRIPT ESSENTIALLY STOPPING IT! May have to use often if timing is wrong. 
+;		You'll understand what I am saying the more you use it. 
+; 	\ = Basic Raid Finder Loop, MUST BE AT RAID PAGE, will fill everything out for you.
+; 	] = Jumps to RAID MENU - If it fails to join, hit key to stop script. Return to Raid screen! 
+;	' = Clicks ATTACK -> AutoPlay
+;	J = for play again, then auto attack loop.
+; 	k = VioletTrial grind..
+;	/ = Angel Hell
+; 	. = Treasure Quest: Campaign-Exclusive Quest
+;	, = Jump to Treasure Quest Page
+;	
+; Set Variables up! Set 1 for ON
+
+StrikeTime := 0 ; ~*!!!!!!!!!!!! StrikeTime !!!!!!!!!!!!!*~ "Currently have it immediately ATTACK and refresh, then continue normal rotation (MCHT1)"
+
 LoopRunning := 0
+
 Event := 0
 Special := 0
 ; AngelHell := 0
 
+; __________________________________________________________________________________________
+; Coordinate Setup
+; If resolution is 1920x1080, Only must set new COORDS for RaidFinder := [{x:_, y:_}] !!
+; Position GBF on right side of screen, SEE GITHUB PICTURE FOR REFERENCE!!
+; __________________________________________________________________________________________
 
-MemberFour := 1	; fourth party member
-
-RaidFinder := [{x: 2250, y: -280}] ; Coords for tab with raidfinder activated. 
+; https://www.gbfraiders.com/
+RaidFinder := [{x: 2250, y: -280}] ; Coords for tab with raidfinder activated. I have it on a different monitor. Yours coords will vary. 
 
 RaidMenu := [{x: 1820, y: 300}, {x: 1570, y: 560}, {x: 1760, y: 560}]
 	  ; [{Enter ID TAB}, {SEARCH BAR}, {JOIN RAID}, {OK BUTTON}]
 
 Summons := [{x: 1650, y: 510}, {x: 1650, y: 640}, {x: 1650, y: 760}]
+
+AttackSummon := [{x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}] 	; TODO: Summon Coords in battle... 
 
 PartyOK := [{x: 1760, y: 730}]
 
@@ -41,6 +63,7 @@ AngelHellList := [{x: 1800, y: 565}] 		; Must hit End to scroll to end of web pa
 
 ; __________________________________________________________________________________________
 ; Simplified with subroutines for quick setup
+;
 ; __________________________________________________________________________________________
 
 \:: 	; "BASIC RAID MENU LOOP"
@@ -49,8 +72,7 @@ AngelHellList := [{x: 1800, y: 565}] 		; Must hit End to scroll to end of web pa
 	Gosub NavigateRaidMenu		; Must be at raid listing page! "gbf.jp/#quest/assist" auto clicks RAID ID tab
 	Gosub autoSummon  		; SUMMON Selection Page
 	Gosub PartyReady		; Ready Party, wait and select OK to ready party
-;Gosub mchAutoOugi 		; Specifically for Mechanic class, can add more detailed turns later. ; contains party OK, !@CHANGE@!
-	TeamRotation(1, 1, 1, 0, 0) 	; (MC*MEMBER* , skill1, skill2, nothing, nothing)
+	TeamRotation(1, 1, 1, 0, 0) 	; (MC*MEMBER* , skill1, skill2, nothing, nothing) *Currenty setup as my mch T1 ougi
 	TeamRotation(4, 0, 1, 0, 0)
 	Gosub autoAttack  		; After MCH OUGI -> AUTOATTACK
 	return
@@ -112,6 +134,9 @@ autoAttack:
 	MouseClick, , Attack[2].x, Attack[2].y
 	Sleep 100
 	Return
+
+attackSummon:	; Settle summon rotations
+	Sleep 100
 
 autoSummon: 			; subroutine for Support Summon selection ; Support Summon Selection Page
 	Random, n, 1, 3 	; random # between 1-3, grab SUMMON coordinates
@@ -184,7 +209,7 @@ k::
 ; *Pay again
 j:: 
 	MouseClick, , OkContinue[1].x, OkContinue[1].y 		; Battle ended, OK
-	Sleep randomDelay(1300)
+	Sleep randomDelay(1400)
 	MouseClick, , playAgain[1].x, playAgain[1].y		; Play Again, Loop
 	Sleep randomDelay(1000)
 	Gosub autoSummon					; grab support summon
@@ -202,7 +227,7 @@ randomDelay(x){
 PartyReady: 	; PartyOK := [{x: 1760, y: 730}]
 	Sleep randomDelay(1400)
 	MouseClick, , PartyOK[1].x, PartyOK[1].y
-	Sleep 5700
+	Sleep 5800
 	Return
 
 
@@ -246,5 +271,3 @@ l:: ; reload script.
 	Reload
 	Return
 
-; TODO:
-; Change timings of *Sleep* to avoid cheat detection...?
