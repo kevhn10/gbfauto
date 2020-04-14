@@ -38,7 +38,8 @@ RaidMenu := [{x: 1820, y: 300}, {x: 1570, y: 560}, {x: 1760, y: 560}]
 
 Summons := [{x: 1650, y: 510}, {x: 1650, y: 640}, {x: 1650, y: 760}]
 
-AttackSummon := [{x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}] 	; TODO: Summon Coords in battle... 
+; During raids, 7 slot is the first summon menu button.
+AttackSummon := [{x: 1455, y: 620}, {x: 1540, y: 620}, {x: 1620, y: 620}, {x: 1700, y: 620}, {x: 1780, y: 620}, {x: 1845, y: 620}, {x: 1800, y: 620}, {x: 1760, y: 680}] 	; TODO: Summon Coords in battle... 
 
 PartyOK := [{x: 1760, y: 730}]
 
@@ -53,7 +54,9 @@ Attack := [{x: 1790, y: 480}, {x: 1470, y: 505}] ; Used for Attack and for when 
 	; [{ATTACK}, {AUTO_ATTACK}] ; same coords as [{BACK}, {NEXT}]
 
 OkContinue := [{x: 1650, y: 600}] 		; *OK Button* After battle ends. 
-playAgain := [{x: 1540, y: 530}]
+playAgain := [{x: 1650, y: 560}]
+EventItem := [{x: 1540, y: 530}]
+EventMission := [{x: 1650, y: 690}, {x: 1650, y: 775}]
 BrowserSearch := [{x: 1700, y: 60}] 		; Raid ID /Search Bar/
 
 TreasureQuestList := [{x: 1800, y: 470}, {x: 1800, y: 590}, {x: 1800, y: 710}, {x: 1800, y: 830}]
@@ -72,11 +75,49 @@ AngelHellList := [{x: 1800, y: 565}] 		; Must hit End to scroll to end of web pa
 	Gosub NavigateRaidMenu		; Must be at raid listing page! "gbf.jp/#quest/assist" auto clicks RAID ID tab
 	Gosub autoSummon  		; SUMMON Selection Page
 	Gosub PartyReady		; Ready Party, wait and select OK to ready party
+
+	; ***Team Skill rotation setup, This is only for first turn, can be setup for more than ONE turn :) ***
 	TeamRotation(1, 1, 1, 0, 0) 	; (MC*MEMBER* , skill1, skill2, nothing, nothing) *Currenty setup as my mch T1 ougi
-	TeamRotation(4, 0, 1, 0, 0)
+	; TeamRotation(2, 0, 0, 0, 0)	; 2nd party member
+	; TeamRotation(3, 0, 0, 0, 0)	; 3rd party member
+	TeamRotation(4, 0, 1, 0, 0)	; 4th party member	Light Ferry, 2nd skill
+
+
 	Gosub autoAttack  		; After MCH OUGI -> AUTOATTACK
 	return
 
+
+
+; __________________________________________________________________________________________
+; Examples of quick skill queue
+; Bind a button and copy&paste -> change skills as needed. TODO: ADD SUMMONS TO SKILL QUEUE
+; __________________________________________________________________________________________
+
+; *Earth Grid Europa farm
+p::	
+	Sleep 50
+	;TeamRotation(1, 0, 0, 0, 0) 	; MC
+	TeamRotation(2, 0, 0, 1, 0)	; 2nd party member Eugen instant ougi
+	; TeamRotation(3, 0, 0, 0, 0)	; 3rd party member
+	TeamRotation(4, 0, 1, 1, 0)	; Vira instant ougi
+	Gosub autoAttack  		; After MCH OUGI -> AUTOATTACK
+	return
+
+; *Dark Grid, MHC1T
+o::	
+	Sleep 50
+	TeamRotation(1, 1, 1, 0, 0) 	; (MC*MEMBER* , skill1, skill2, nothing, nothing) *Currenty setup as my mch T1 ougi
+	; TeamRotation(2, 0, 0, 0, 0)	; 2nd party member
+	; TeamRotation(3, 0, 0, 0, 0)	; 3rd party member
+	TeamRotation(4, 0, 1, 0, 0)	; 4th party member	Light Ferry, 2nd skill
+	Gosub autoAttack  		; After MCH OUGI -> AUTOATTACK
+	return
+
+
+; __________________________________________________________________________________________
+; Menus, skills queues, and other timings
+; Avoid touching below. YOU MAY NEED TO ADJUST TIMINGS ON DEPENDING ON YOUR INTERNET
+; __________________________________________________________________________________________
 
 ]:: ; If it fails to join, hit key to stop script. Return to Raid screen! 
 	Sleep 50
@@ -135,9 +176,19 @@ autoAttack:
 	Sleep 100
 	Return
 
-attackSummon:	; Settle summon rotations
+; Summon rotations
+attackSummon(n){	
+	Global AttackSummon
+	Sleep 800
+	Mouseclick, , AttackSummon[7].x, AttackSummon[7].y
 	Sleep 100
+	Mouseclick, , AttackSummon[n].x, AttackSummon[n].y
+	Sleep 100
+	Mouseclick, , AttackSummon[8].x, AttackSummon[8].y
+	Sleep 100
+}	
 
+; Used mostly to prevent repetition, less likely to get caught? lol
 autoSummon: 			; subroutine for Support Summon selection ; Support Summon Selection Page
 	Random, n, 1, 3 	; random # between 1-3, grab SUMMON coordinates
 	a := Summons[n].x	; Grab coords for Support Summon list positions!
@@ -197,7 +248,7 @@ k::
 	Sleep randomDelay(1000)
 	MouseClick, , SubQuestLengthThree[3].x, SubQuestLengthThree[3].y 		; SubQuestLengthThree := [{x: 0, y: 0}, {x: 0, y: 0}, {x: 1810, y: 650}]
 	Sleep randomDelay(1000)
-	MouseClick, , SubQuestLengthThree[3].x +1, SubQuestLengthThree[3].y +1 
+	MouseClick, , SubQuestLengthThree[3].x, SubQuestLengthThree[3].y
 	Sleep randomDelay(1000)
 	Gosub autoSummon
 	Sleep randomDelay(1400)
@@ -206,8 +257,89 @@ k::
 	Gosub autoAttack
 	return
 
-; *Pay again
+
+; Play again U%F menu skip to summon page
+ufSkip: 
+	MouseClick, , OkContinue[1].x, OkContinue[1].y 		; Battle ended, OK
+	Sleep randomDelay(1400)
+	MouseClick, , EventMission[2].x, EventMission[2].y
+	Sleep randomDelay(600)
+	MouseClick, , EventItem[1].x, EventItem[1].y
+	Sleep randomDelay(200)
+	MouseClick, , playAgain[1].x, playAgain[1].y		; Play Again, Loop
+	Sleep randomDelay(500)
+	;MouseClick, , EventMission[1].x, EventMission[1].y
+	;Sleep randomDelay(1000)
+	Return
+
+afterSummonReady: 
+	attackSummon(1)	; Use summon slot 1, AKA Bonito, Change value for different summon slot..
+	TeamRotation(1, 1, 0, 0, 0) 	; (MC*MEMBER* , skill1, skill2, nothing, nothing) *Currenty setup as my KENGO BONITO BUILD
+	TeamRotation(2, 1, 1, 0, 0)	; 2nd party member
+	TeamRotation(3, 1, 0, 0, 0)	; 3rd party member
+	TeamRotation(4, 1, 0, 1, 0)	; 4th party member	
+	Gosub autoAttack
+	Return
+
+z::
+	Gosub ufSkip
+	Return
+x::	
+	Gosub afterSummonReady
+	Sleep 4800
+	Mouseclick, , 1675, 950
+	Send ^{f5}
+	Return
+
+; *Play again UNITE AND FIGHT Ex+
+g:: 
+	Gosub ufSkip
+	Gosub autoSummon					; grab support summon
+	Sleep randomDelay(500)
+	MouseClick, , PartyOK[1].x, PartyOK[1].y    		; OK
+	Sleep 5800
+
+	attackSummon(1)	; Use summon slot 1, AKA Bonito
+	TeamRotation(1, 1, 0, 0, 0) 	; (MC*MEMBER* , skill1, skill2, nothing, nothing) *Currenty setup as my KENGO BONITO BUILD
+	TeamRotation(2, 1, 1, 0, 0)	; 2nd party member
+	TeamRotation(3, 1, 0, 0, 0)	; 3rd party member
+	TeamRotation(4, 1, 0, 1, 0)	; 4th party member	
+	Gosub autoAttack
+	Sleep 8000
+	Send ^{f5}
+	Sleep 5400
+	Send j
+	Return
+
+
+
+; *Play again UNITE AND FIGHT TRASH grind
 j:: 
+	MouseClick, , OkContinue[1].x, OkContinue[1].y 		; Battle ended, OK
+	Sleep randomDelay(1400)
+	MouseClick, , EventMission[2].x, EventMission[2].y
+	Sleep randomDelay(800)
+	MouseClick, , EventItem[1].x, EventItem[1].y
+	Sleep randomDelay(200)
+	MouseClick, , playAgain[1].x, playAgain[1].y		; Play Again, Loop
+	Sleep randomDelay(500)
+	MouseClick, , EventMission[1].x, EventMission[1].y
+	Sleep randomDelay(1000)
+	Gosub autoSummon					; grab support summon
+	Sleep randomDelay(500)
+	MouseClick, , PartyOK[1].x, PartyOK[1].y    		; OK
+	Sleep 5500
+
+	attackSummon(1)	; Use summon slot 1, AKA Bonito
+
+	Gosub autoAttack
+	Send ^{f5}
+	Sleep 5400
+	Send j
+	Return
+
+; *Play again, normal quest grind
+h:: 
 	MouseClick, , OkContinue[1].x, OkContinue[1].y 		; Battle ended, OK
 	Sleep randomDelay(1400)
 	MouseClick, , playAgain[1].x, playAgain[1].y		; Play Again, Loop
@@ -218,6 +350,8 @@ j::
 	Sleep 5450
 	Gosub autoAttack
 	Return
+
+
 
 randomDelay(x){
 	Random,  n, x, x+500
@@ -247,11 +381,14 @@ TeamRotation(Member, skill1, skill2, skill3, skill4){
 		Sleep randomDelay(6300)	
 	}
 	if(Member != 1){ 				; Hit back only after MC has been finished
-		sleep 200
+		sleep 1400
 		MouseClick, , Attack[2].x, Attack[2].y	; Click Back
+		Sleep 500
 	}
-	Sleep 100
+	Sleep 300
 	MouseClick, , Character[Member].x, Character[Member].y			; click portrait
+	Sleep 200
+	MouseClick, , Character[Member].x, Character[Member].y
 	Sleep 100
 	QueueSkill(skill1, 1)				; Sleep -> click skill
 	QueueSkill(skill2, 2)
@@ -262,7 +399,13 @@ TeamRotation(Member, skill1, skill2, skill3, skill4){
 QueueSkill(skill, n){
 	global SkillCoords
 	if(skill = 1){
-		Sleep randomDelay(100)
+		Sleep 300
+		MouseClick, , SkillCoords[n].x, SkillCoords[n].y
+		Sleep 200
+		MouseClick, , SkillCoords[n].x, SkillCoords[n].y
+		Sleep 100
+		MouseClick, , SkillCoords[n].x, SkillCoords[n].y
+		Sleep 50
 		MouseClick, , SkillCoords[n].x, SkillCoords[n].y
 	}
 }
