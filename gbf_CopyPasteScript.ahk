@@ -1,8 +1,7 @@
 ﻿CoordMode, Mouse, Screen
 
-
-; Bindings: For most, MUST BE AT RESPECTIVE RAID/QUEST PAGE!	
-;	***ALL BINDINGS CAN BE CHANGED!! IT DOESN'T MATTER! BESIDES , WHICH IS TREASURE PAGE***
+; Bindings: For most, MUST BE AT RESPECTIVE RAID/QUEST PAGE!	I MAY HAVE CHANGED A FEW, UPDATE LATER 
+;	***ALL BINDINGS CAN BE CHANGED!! IT DOESN'T MATTER! BESIDES "," WHICH IS TREASURE PAGE***
 ;	L = MOST IMPORTANT BINDING, REFRESHED SCRIPT ESSENTIALLY STOPPING IT! May have to use often if timing is wrong. 
 ;		You'll understand what I am saying the more you use it. 
 ; 	\ = Basic Raid Finder Loop, MUST BE AT RAID PAGE, will fill everything out for you.
@@ -16,9 +15,10 @@
 ;	
 ; Set Variables up! Set 1 for ON
 
-StrikeTime := 0 ; ~*!!!!!!!!!!!! StrikeTime !!!!!!!!!!!!!*~ "Currently have it immediately ATTACK and refresh, then continue normal rotation (MCHT1)"
+; ~*!!!!!!!! StrikeTime !!!!!!!!!*~ "Currently have it immediately ATTACK and refresh, then continue normal rotation (MCHT1)"
+StrikeTime := 0 
 
-LoopRunning := 0
+LoopRunning := 0 ; Work in progress
 
 Event := 0
 Special := 0
@@ -39,37 +39,36 @@ RaidMenu := [{x: 1820, y: 300}, {x: 1570, y: 560}, {x: 1760, y: 560}]
 Summons := [{x: 1650, y: 510}, {x: 1650, y: 640}, {x: 1650, y: 760}]
 
 ; During raids, 7 slot is the first summon menu button.
-AttackSummon := [{x: 1455, y: 620}, {x: 1540, y: 620}, {x: 1620, y: 620}, {x: 1700, y: 620}, {x: 1780, y: 620}, {x: 1845, y: 620}, {x: 1800, y: 620}, {x: 1760, y: 680}] 	; TODO: Summon Coords in battle... 
+AttackSummon := [{x: 1455, y: 620}, {x: 1540, y: 620}, {x: 1620, y: 620}, {x: 1700, y: 620}, {x: 1780, y: 620}, {x: 1845, y: 620}, {x: 1800, y: 620}, {x: 1765, y: 595}] 	; TODO: Summon Coords in battle... 
 
 PartyOK := [{x: 1760, y: 730}]
 
-Character := [{x: 1455, y: 620}, {x: 1540, y: 620}, {x: 1620, y: 620}, {x: 1700, y: 620}]
-
-mechanicRotation := [{x: 1470, y: 600}, {x: 1570, y: 645}, {x: 1660, y: 645}] ; MC & Skill positions
-	; [{MC}, {MCHSK1}, {MCHSK2}] ; To do: Add Coords for all other Team Characters!
+Character := [{x: 1455, y: 620}, {x: 1540, y: 620}, {x: 1620, y: 620}, {x: 1700, y: 620}] ; Char portraits during raid
 
 SkillCoords := [{x: 1560, y: 640}, {x: 1665, y: 645}, {x: 1746, y: 645}, {x: 1830, y: 645}]
 
 Attack := [{x: 1790, y: 480}, {x: 1470, y: 505}] ; Used for Attack and for when a battle finishes.. 
 	; [{ATTACK}, {AUTO_ATTACK}] ; same coords as [{BACK}, {NEXT}]
 
-OkContinue := [{x: 1650, y: 600}] 		; *OK Button* After battle ends. 
+OkContinue := [{x: 1650, y: 600}] 		; *OK Button* After battle ends
 playAgain := [{x: 1650, y: 560}]
-EventItem := [{x: 1540, y: 530}]
-EventMission := [{x: 1650, y: 690}, {x: 1650, y: 775}]
-BrowserSearch := [{x: 1700, y: 60}] 		; Raid ID /Search Bar/
+EventItem := [{x: 1540, y: 530}]		; Guild War
+EventMission := [{x: 1650, y: 690}, {x: 1650, y: 775}] ; Guild War
+BrowserSearch := [{x: 1630, y: 63}] 		; Raid ID /Browser Search Bar/
 
+; Next part is a little difficult to assign, Very Specific quests
 TreasureQuestList := [{x: 1800, y: 470}, {x: 1800, y: 590}, {x: 1800, y: 710}, {x: 1800, y: 830}]
-SubQuestLengthOne := [{x: 1810, y: 580}]
-SubQuestLengthThree := [{x: 0, y: 0}, {x: 0, y: 0}, {x: 1810, y: 650}]
+SubQuestLengthOne := [{x: 1810, y: 580}] 	; Position after hitting ANY quest with a sub quest list of 1
+SubQuestLengthThree := [{x: 0, y: 0}, {x: 0, y: 0}, {x: 1810, y: 650}] ; Position after hitting ANY quest with a sub quest list of 3
 AngelHellList := [{x: 1800, y: 565}] 		; Must hit End to scroll to end of web page.
 
 ; __________________________________________________________________________________________
 ; Simplified with subroutines for quick setup
-;
+; ";" are commented out lines, remove to reactivate
+; 
 ; __________________________________________________________________________________________
 
-\:: 	; "BASIC RAID MENU LOOP"
+\:: 	; "BASIC RAID MENU LOOP" This grabs a raid id from browser and pastes it within the raid search/join ID field
 	Sleep 50 ; Used so inputs don't overlap "50ms"
 	Gosub GetRaidID	 		; Go to tab and copy RAID ID
 	Gosub NavigateRaidMenu		; Must be at raid listing page! "gbf.jp/#quest/assist" auto clicks RAID ID tab
@@ -82,10 +81,8 @@ AngelHellList := [{x: 1800, y: 565}] 		; Must hit End to scroll to end of web pa
 	; TeamRotation(3, 0, 0, 0, 0)	; 3rd party member
 	TeamRotation(4, 0, 1, 0, 0)	; 4th party member	Light Ferry, 2nd skill
 
-
 	Gosub autoAttack  		; After MCH OUGI -> AUTOATTACK
 	return
-
 
 
 ; __________________________________________________________________________________________
@@ -94,25 +91,44 @@ AngelHellList := [{x: 1800, y: 565}] 		; Must hit End to scroll to end of web pa
 ; __________________________________________________________________________________________
 
 ; *Earth Grid Europa farm
-p::	
-	Sleep 50
-	;TeamRotation(1, 0, 0, 0, 0) 	; MC
+p::
+	TeamRotation(1, 1, 0, 0, 0) 	; MC
 	TeamRotation(2, 0, 0, 1, 0)	; 2nd party member Eugen instant ougi
-	; TeamRotation(3, 0, 0, 0, 0)	; 3rd party member
+	TeamRotation(3, 1, 1, 0, 0)	; 3rd party member
 	TeamRotation(4, 0, 1, 1, 0)	; Vira instant ougi
 	Gosub autoAttack  		; After MCH OUGI -> AUTOATTACK
 	return
 
 ; *Dark Grid, MHC1T
-o::	
+o::
+	Sleep 50
+	TeamRotation(1, 1, 1, 1, 0) 	; (MC*MEMBER* , skill1, skill2, nothing, nothing) *Currenty setup as my mch T1 ougi
+	TeamRotation(2, 0, 1, 0, 0)	; 2nd party member
+	TeamRotation(3, 0, 1, 0, 0)	; 3rd party member
+	TeamRotation(4, 0, 1, 0, 0)	; 4th party member	Ferry, 2nd skill
+	Gosub autoAttack  		; After MCH OUGI -> AUTOATTACK
+	return
+
+; Fire -> Grim farm
+NumPad7:: 
 	Sleep 50
 	TeamRotation(1, 1, 1, 0, 0) 	; (MC*MEMBER* , skill1, skill2, nothing, nothing) *Currenty setup as my mch T1 ougi
 	; TeamRotation(2, 0, 0, 0, 0)	; 2nd party member
 	; TeamRotation(3, 0, 0, 0, 0)	; 3rd party member
-	TeamRotation(4, 0, 1, 0, 0)	; 4th party member	Light Ferry, 2nd skill
+	TeamRotation(4, 0, 1, 0, 0)	; 4th party member	
 	Gosub autoAttack  		; After MCH OUGI -> AUTOATTACK
 	return
 
+; Dark Spartan -> Akasha 
+NumPad6::
+	attackSummon(1) ; Bahamut
+	TeamRotation(4, 1, 1, 1, 0)	; 4th party member	kolo
+	; TeamRotation(1, 0, 0, 0, 0) 	; (MC*MEMBER* , skill1, skill2, nothing, nothing)
+	TeamRotation(2, 1, 1, 0, 0)	; 2nd party member
+	; TeamRotation(3, 0, 0, 0, 0)	; 3rd party member
+	; TeamRotation(4, 0, 1, 0, 0)	; 4th party member	kolo
+	Gosub autoAttack  		; 
+	return
 
 ; __________________________________________________________________________________________
 ; Menus, skills queues, and other timings
@@ -171,9 +187,8 @@ NavigateRaidMenu:
 autoAttack:
 	Sleep 100
 	MouseClick, , Attack[1].x, Attack[1].y
-	Sleep randomDelay(1100)
+	Sleep randomDelay(400)
 	MouseClick, , Attack[2].x, Attack[2].y
-	Sleep 100
 	Return
 
 ; Summon rotations
@@ -197,7 +212,7 @@ autoSummon: 			; subroutine for Support Summon selection ; Support Summon Select
 	MouseClick, , a, b
 	Return
 
-GetRaidID:	
+GetRaidID:
 	MouseClick, , RaidFinder[1].x, RaidFinder[1].y ; Grab raid ID
 	Sleep 500
 	return
@@ -274,17 +289,17 @@ ufSkip:
 
 afterSummonReady: 
 	attackSummon(1)	; Use summon slot 1, AKA Bonito, Change value for different summon slot..
-	TeamRotation(1, 1, 0, 0, 0) 	; (MC*MEMBER* , skill1, skill2, nothing, nothing) *Currenty setup as my KENGO BONITO BUILD
+	;TeamRotation(0, 0, 0, 0, 0) 	; (MC*MEMBER* , skill1, skill2, nothing, nothing) *Currenty setup as my KENGO BONITO BUILD
 	TeamRotation(2, 1, 1, 0, 0)	; 2nd party member
 	TeamRotation(3, 1, 0, 0, 0)	; 3rd party member
-	TeamRotation(4, 1, 0, 1, 0)	; 4th party member	
+	TeamRotation(4, 0, 0, 1, 0)	; 4th party member	
 	Gosub autoAttack
 	Return
 
-z::
+NumPad1::
 	Gosub ufSkip
 	Return
-x::	
+NumPad2::	
 	Gosub afterSummonReady
 	Sleep 4800
 	Mouseclick, , 1675, 950
@@ -300,10 +315,10 @@ g::
 	Sleep 5800
 
 	attackSummon(1)	; Use summon slot 1, AKA Bonito
-	TeamRotation(1, 1, 0, 0, 0) 	; (MC*MEMBER* , skill1, skill2, nothing, nothing) *Currenty setup as my KENGO BONITO BUILD
+	TeamRotation(1, 0, 0, 0, 0) 	; (MC*MEMBER* , skill1, skill2, nothing, nothing) *Currenty setup as my KENGO BONITO BUILD
 	TeamRotation(2, 1, 1, 0, 0)	; 2nd party member
 	TeamRotation(3, 1, 0, 0, 0)	; 3rd party member
-	TeamRotation(4, 1, 0, 1, 0)	; 4th party member	
+	TeamRotation(4, 0, 0, 1, 0)	; 4th party member	
 	Gosub autoAttack
 	Sleep 8000
 	Send ^{f5}
@@ -342,7 +357,8 @@ j::
 h:: 
 	MouseClick, , OkContinue[1].x, OkContinue[1].y 		; Battle ended, OK
 	Sleep randomDelay(1400)
-	MouseClick, , playAgain[1].x, playAgain[1].y		; Play Again, Loop
+	;MouseClick, , playAgain[1].x, playAgain[1].y		; Play Again, Loop
+	MouseClick, , EventItem[1].x, EventItem[1].y  
 	Sleep randomDelay(1000)
 	Gosub autoSummon					; grab support summon
 	Sleep randomDelay(1400)
@@ -376,36 +392,39 @@ TeamRotation(Member, skill1, skill2, skill3, skill4){
 	}		
 	if(StrikeTime = 1 && Member = 1){ 		; If Strike time. Attack immediately, refresh.
 		MouseClick, , Attack[1].x, Attack[1].y	; *Click* {ATTACK} 
-		Sleep 200
+		Sleep 150
 		send ^{f5}
 		Sleep randomDelay(6300)	
 	}
 	if(Member != 1){ 				; Hit back only after MC has been finished
-		sleep 1400
+		sleep 150
 		MouseClick, , Attack[2].x, Attack[2].y	; Click Back
-		Sleep 500
+		Sleep 150
 	}
-	Sleep 300
-	MouseClick, , Character[Member].x, Character[Member].y			; click portrait
-	Sleep 200
-	MouseClick, , Character[Member].x, Character[Member].y
 	Sleep 100
+	MouseClick, , Character[Member].x, Character[Member].y			; click portrait
+	Sleep 50
+	MouseClick, , Character[Member].x, Character[Member].y
+	Sleep 50
 	QueueSkill(skill1, 1)				; Sleep -> click skill
 	QueueSkill(skill2, 2)
 	QueueSkill(skill3, 3)
 	QueueSkill(skill4, 4) 
 }	
 
+; Clicks multiple times due to skill/damage info
 QueueSkill(skill, n){
 	global SkillCoords
 	if(skill = 1){
-		Sleep 300
+		Sleep 25
 		MouseClick, , SkillCoords[n].x, SkillCoords[n].y
-		Sleep 200
+		Sleep 25
 		MouseClick, , SkillCoords[n].x, SkillCoords[n].y
-		Sleep 100
+		Sleep 25
 		MouseClick, , SkillCoords[n].x, SkillCoords[n].y
-		Sleep 50
+		Sleep 20
+		MouseClick, , SkillCoords[n].x, SkillCoords[n].y
+		Sleep 10
 		MouseClick, , SkillCoords[n].x, SkillCoords[n].y
 	}
 }
