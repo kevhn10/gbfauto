@@ -31,7 +31,7 @@ Special := 0
 ; __________________________________________________________________________________________
 
 ; https://www.gbfraiders.com/
-RaidFinder := [{x: 300, y: 310}] ; Coords for tab with raidfinder activated. I have it on a different monitor. Yours coords will vary. 
+RaidFinder := [{x: 2069, y: -470}] ; Coords for tab with raidfinder activated. I have it on a different monitor. Yours coords will vary. 
 
 RaidMenu := [{x: 1820, y: 300}, {x: 1570, y: 560}, {x: 1760, y: 560}]
 	  ; [{Enter ID TAB}, {SEARCH BAR}, {JOIN RAID}, {OK BUTTON}]
@@ -54,13 +54,17 @@ OkContinue := [{x: 1650, y: 600}] 		; *OK Button* After battle ends
 playAgain := [{x: 1650, y: 560}]
 EventItem := [{x: 1540, y: 530}]		; Guild War
 EventMission := [{x: 1650, y: 690}, {x: 1650, y: 775}] ; Guild War
+gwMissionsSelect := [{x: 1520, y: 690}, {x: 1660, y: 690}, {x: 1800, y: 690}] ; Guild War
+
 BrowserSearch := [{x: 1630, y: 63}] 		; Raid ID /Browser Search Bar/
 
 ; Next part is a little difficult to assign, Very Specific quests
 TreasureQuestList := [{x: 1800, y: 470}, {x: 1800, y: 590}, {x: 1800, y: 710}, {x: 1800, y: 830}]
 SubQuestLengthOne := [{x: 1810, y: 580}] 	; Position after hitting ANY quest with a sub quest list of 1
-SubQuestLengthThree := [{x: 0, y: 0}, {x: 0, y: 0}, {x: 1810, y: 650}] ; Position after hitting ANY quest with a sub quest list of 3
+SubQuestLengthThree := [{x: 0, y: 0}, {x: 1810, y: 577}, {x: 1810, y: 650}] ; Position after hitting ANY quest with a sub quest list of 3
+SubQuestLengthSix :=  [{x: 1810, y: 190}, {x: 1810, y: 457}, {x: 1810, y: 530}, {x: 1810, y: 605} ] ; fire, water, earth so far
 AngelHellList := [{x: 1800, y: 495}] 		; Must hit End to scroll to end of web page.
+ElementalTreasure := [{x: 1800, y: 255}] 
 
 ; __________________________________________________________________________________________
 ; Simplified with subroutines for quick setup
@@ -75,12 +79,13 @@ AngelHellList := [{x: 1800, y: 495}] 		; Must hit End to scroll to end of web pa
 	Gosub autoSummon  		; SUMMON Selection Page
 	Gosub PartyReady		; Ready Party, wait and select OK to ready party
 	
+	; attackSummon(1) ; bonito
 	; ***Team Skill rotation setup, This is only for first turn, can be setup for more than ONE turn :) ***
-	; TeamRotation(1, 1, 1, 0, 0) 	; (MC*MEMBER* , skill1, skill2, nothing, nothing) *Currenty setup as my mch T1 ougi
-	; TeamRotation(2, 0, 0, 0, 0)	; 2nd party member
-	; TeamRotation(3, 0, 0, 0, 0)	; 3rd party member
-	; TeamRotation(4, 0, 1, 0, 0)	; 4th party member	Light Ferry, 2nd skill
-	attackSummon(1) ; bonito
+	; TeamRotation(1, 1, 0, 0, 0) 	; (MC*MEMBER* , skill1, skill2, nothing, nothing) *Currenty setup as my mch T1 ougi
+	; TeamRotation(2, 0, 1, 0, 0)	; 2nd party member
+	; TeamRotation(3, 1, 0, 0, 0)	; 3rd party member
+	; TeamRotation(4, 0, 0, 1, 0)	; 4th party member	Light Ferry, 2nd skill
+	
 	
 	Gosub autoAttack  		; After MCH OUGI -> AUTOATTACK
 	return
@@ -142,10 +147,10 @@ u::
 
 y::
 	attackSummon(6) ; shiva
-	TeamRotation(1, 1, 0, 1, 1) 	; (MC*MEMBER* , skill1, skill2, nothing, nothing) *Currenty setup as my mch T1 ougi
-	; TeamRotation(2, 1, 0, 0, 0)	; 2nd party member
+	TeamRotation(1, 1, 0, 1, 0) 	; (MC*MEMBER* , skill1, skill2, nothing, nothing) *Currenty setup as my mch T1 ougi
+	TeamRotation(2, 1, 0, 0, 0)	; 2nd party member
 	TeamRotation(3, 1, 0, 1, 1)	; 3rd party membera
-	TeamRotation(4, 1, 0, 0, 0)	; 4th party member	
+	TeamRotation(4, 0, 0, 1, 0)	; 4th party member	
 	Gosub autoAttack  		; After MCH OUGI -> AUTOATTACK
 	return
 ; __________________________________________________________________________________________
@@ -165,6 +170,40 @@ y::
 	Sleep 50
 	Send {Enter}
    	clipboard := temp 		 ; Clipboard to previous text
+	Return
+
+
+
+
+;; rise of beast lesser event grind
+f::
+	clipboard := "http://game.granbluefantasy.jp/#event/advent"
+	MouseClick, , BrowserSearch[1].x , BrowserSearch[1].y
+	Sleep 50
+	Send ^a
+	Sleep 50
+	Send ^v{Enter}
+	Sleep 50
+	Send {Enter}
+   	clipboard := temp 		 ; Clipboard to previous text
+	Sleep 2000
+	MouseClick, , 1670 , 820 	; main frame
+	Sleep 500
+	
+	MouseClick, , 1510 , 665 	; select beast
+	Sleep randomDelay(900)
+	
+	Gosub autoSummon  		; SUMMON Selection Page
+	Gosub PartyReady		; Ready Party, wait and select OK to ready party
+	
+	attackSummon(1) ; bonito
+	Sleep randomDelay(6000)
+	Gosub autoAttack  		; After kengo OUGI -> AUTOATTACK
+	Sleep randomDelay(800)
+	Send {F5}
+	Sleep randomDelay(3000)
+	Send {f}
+	
 	Return
 
 
@@ -198,6 +237,39 @@ NavigateRaidMenu:
    	clipboard := temp ; Clipboard to previous text
 	Return
 
+r:: ; Return to Special Quest Page
+	Sleep 50
+	temp := clipboardall ; Store clipboard
+   	clipboard := "http://game.granbluefantasy.jp/#quest/extra/event/11030"
+	MouseClick, , BrowserSearch[1].x , BrowserSearch[1].y
+	Sleep 50
+	Send ^a
+	Sleep 50
+	Send ^v{Enter}
+	Sleep 50
+	Send {Enter}
+   	clipboard := temp ; Clipboard to previous text
+	Return
+
+; *!RobomiZ!* Grinding for silver relics 
+t:: 	
+	Send {r}
+	Sleep randomDelay(2000)
+	MouseClick, , AngelHellList[1].x, AngelHellList[1].y
+	Sleep randomDelay(1500)
+	MouseClick, , SubQuestLengthThree[2].x, SubQuestLengthThree[2].y 	; SubQuestLengthThree := {x: 1810, y: 580}
+	Sleep randomDelay(1500)
+	Gosub autoSummon
+	Sleep randomDelay(1400)
+	MouseClick, , PartyOK[1].x, PartyOK[1].y    ; [PartyOK := {x: 1760, y: 730}]
+	Sleep 850
+	Gosub autoAttack
+	
+	Sleep 20000
+	Send {t} 	; Repeat RobomiZ!
+	Return
+
+
 ':: 
 	Gosub autoAttack
 	Return
@@ -217,7 +289,7 @@ attackSummon(n){
 	Sleep 100
 	Mouseclick, , AttackSummon[n].x, AttackSummon[n].y
 	Sleep 100
-	Mouseclick, , AttackSummon[8].x, AttackSummon[8].y + 70
+	Mouseclick, , AttackSummon[8].x, AttackSummon[8].y + 70 ; bonito
 	Sleep 100
 }	
 
@@ -231,18 +303,8 @@ autoSummon: 			; subroutine for Support Summon selection ; Support Summon Select
 	Return
 
 GetRaidID:
-	ControlClick, x300 y310, GBF Raiders,,,, NA
+	ControlClick, x180 y175, Granblue Raid Finder,,,, NA
 	; MouseClick, , RaidFinder[1].x, RaidFinder[1].y ; Grab raid ID
-	Sleep 500
-	return
-
-PartyT := [{x: 145, y: 305}, {x: 1650, y: 640}, {x: 1650, y: 760}]
-
-z::	
-	xp = PartyT[1].x
-	yp = PartyT[1].y
-	ControlClick, x145 y305, Granblue Fantasy,,,, NA
-	;ControlClick,, Granblue Fantasy,,,, NA  % "x" xp " y" yp
 	Sleep 500
 	return
 
@@ -263,7 +325,8 @@ z::
 	Sleep 5450
 	Gosub autoAttack
 	send ^{f5}
-	Sleep 5450
+	Sleep 5500
+	Send {.}
 	return
 
 ; *!Angel Halo!* Grinding for silver relics 
@@ -272,7 +335,7 @@ z::
 	Sleep randomDelay(2000)
 	Send {End}
 	Sleep 1000
-	MouseClick, , AngelHellList [1].x, AngelHellList [1].y
+	MouseClick, , AngelHellList[1].x, AngelHellList[1].y
 	Sleep randomDelay(1000)
 	MouseClick, , SubQuestLengthThree[3].x, SubQuestLengthThree[3].y 	; SubQuestLengthThree := {x: 1810, y: 580}
 	Sleep randomDelay(1000)
@@ -291,7 +354,7 @@ z::
 k::
 	Send {,}
 	Sleep randomDelay(1800)
-	MouseClick, , TreasureQuestList[3].x, TreasureQuestList[3].y
+	MouseClick, , TreasureQuestList[1].x, TreasureQuestList[1].y
 	Sleep randomDelay(1000)
 	MouseClick, , SubQuestLengthThree[3].x, SubQuestLengthThree[3].y 		; SubQuestLengthThree := [{x: 0, y: 0}, {x: 0, y: 0}, {x: 1810, y: 650}]
 	Sleep randomDelay(1000)
@@ -307,15 +370,37 @@ k::
 	Send {k} 	; Repeat angel halo
 	return
 
+; SubQuestLengthSix Wind deluge Farm
+b::
+	Send {,}
+	Sleep randomDelay(2100)
+	Send {End}
+	Sleep 1000
+	MouseClick, , ElementalTreasure[1].x, ElementalTreasure[1].y
+	Sleep randomDelay(1000)
+	MouseClick, , SubQuestLengthSix[2].x, SubQuestLengthSix[2].y 	; Change for Diff trial!
+	Sleep randomDelay(1000)
+	Gosub autoSummon
+	Sleep randomDelay(1400)
+	MouseClick, , PartyOK[1].x, PartyOK[1].y    ; [PartyOK := {x: 1760, y: 730}]
+	Sleep 6000
+	Gosub autoAttack
+	
+	Sleep randomDelay(29000)
+	send ^{f5}
+	Sleep randomDelay(5450)
+	Send {b} 	; Repeat angel halo
+	Return
+
 
 ; Play again U%F menu skip to summon page
 ufSkip: 
 	MouseClick, , OkContinue[1].x, OkContinue[1].y 		; Battle ended, OK
 	Sleep randomDelay(1400)
 	MouseClick, , EventMission[2].x, EventMission[2].y
-	Sleep randomDelay(600)
+	Sleep randomDelay(700)
 	MouseClick, , EventItem[1].x, EventItem[1].y
-	Sleep randomDelay(200)
+	Sleep randomDelay(250)
 	MouseClick, , playAgain[1].x, playAgain[1].y		; Play Again, Loop
 	Sleep randomDelay(500)
 	;MouseClick, , EventMission[1].x, EventMission[1].y
@@ -345,17 +430,18 @@ NumPad2::
 g:: 
 	Gosub ufSkip
 	Gosub autoSummon					; grab support summon
-	Sleep randomDelay(500)
+	Sleep randomDelay(1000)
 	MouseClick, , PartyOK[1].x, PartyOK[1].y    		; OK
-	Sleep 5800
-
+	Sleep 7800
+	
 	attackSummon(1)	; Use summon slot 1, AKA Bonito
-	TeamRotation(1, 0, 0, 0, 0) 	; (MC*MEMBER* , skill1, skill2, nothing, nothing) *Currenty setup as my KENGO BONITO BUILD
-	TeamRotation(2, 1, 1, 0, 0)	; 2nd party member
-	TeamRotation(3, 1, 0, 0, 0)	; 3rd party member
-	TeamRotation(4, 0, 0, 1, 0)	; 4th party member	
+	Sleep 6000
+	TeamRotation(1, 1, 0, 1, 0) 	; (MC*MEMBER* , skill1, skill2, nothing, nothing) *Currenty setup as my KENGO BONITO BUILD
+	TeamRotation(2, 0, 1, 0, 0)	; 2nd party member
+	TeamRotation(3, 1, 1, 1, 0)	; 3rd party member
+	TeamRotation(4, 1, 0, 0, 0)	; 4th party member	
 	Gosub autoAttack
-	Sleep 8000
+	Sleep 12000
 	Send ^{f5}
 	Sleep 5400
 	Send j
@@ -363,7 +449,7 @@ g::
 
 
 
-; *Play again UNITE AND FIGHT TRASH grind
+; *Play again UNITE AND FIGHT TRASH grindv
 j:: 
 	MouseClick, , OkContinue[1].x, OkContinue[1].y 		; Battle ended, OK
 	Sleep randomDelay(1400)
@@ -388,18 +474,45 @@ j::
 	Send j
 	Return
 
-; *Play again, normal quest grind
-h:: 
-	MouseClick, , OkContinue[1].x, OkContinue[1].y 		; Battle ended, OK
-	Sleep randomDelay(1400)
-	;MouseClick, , playAgain[1].x, playAgain[1].y		; Play Again, Loop
-	MouseClick, , EventItem[1].x, EventItem[1].y  
-	Sleep randomDelay(1000)
+; Guild War mission grinding. 
+e:: 
+	
+	Sleep 50
+	temp := clipboardall ; Store clipboard
+   	clipboard := "http://game.granbluefantasy.jp/#event/teamraid053"
+	MouseClick, , BrowserSearch[1].x , BrowserSearch[1].y
+	Sleep 50
+	Send ^a
+	Sleep 50
+	Send ^v{Enter}
+	Sleep 50
+	Send {Enter}
+   	clipboard := temp ; Clipboard to previous text
+	Sleep 2000
+
+	MouseClick, ,1660, 890
+	; MouseClick, , 1660, 750
+	; gwMissionsSelect 1
+	MouseClick, , gwMissionsSelect[3].x, gwMissionsSelect[3].y   
+	Sleep 1400
+	
 	Gosub autoSummon					; grab support summon
-	Sleep randomDelay(1400)
+	Sleep randomDelay(900)
 	MouseClick, , PartyOK[1].x, PartyOK[1].y    		; OK
-	Sleep 5450
+	Sleep 6600
+	attackSummon(1)	; Use summon slot 1, AKA Bonito
+	Sleep randomDelay(8500)
+
+	TeamRotation(1, 1, 0, 1, 0) 	; (MC*MEMBER* , skill1, skill2, nothing, nothing) *Currenty setup as my KENGO BONITO BUILD
+	TeamRotation(2, 0, 1, 0, 0)	; 2nd party member
+	TeamRotation(3, 1, 1, 1, 0)	; 3rd party member
+	TeamRotation(4, 1, 0, 0, 0)	; 4th party member
+
 	Gosub autoAttack
+	Sleep 54000
+	Send ^{f5}
+	Sleep 5400
+	Send e
 	Return
 
 
@@ -415,6 +528,20 @@ PartyReady: 	; PartyOK := [{x: 1760, y: 730}]
 	Sleep 5800
 	Return
 
+
+; *Play again, normal quest grind
+h:: 
+	MouseClick, , OkContinue[1].x, OkContinue[1].y 		; Battle ended, OK
+	Sleep randomDelay(1400)
+	;MouseClick, , playAgain[1].x, playAgain[1].y		; Play Again, Loop
+	MouseClick, , EventItem[1].x, EventItem[1].y  
+	Sleep randomDelay(1000)
+	Gosub autoSummon					; grab support summon
+	Sleep randomDelay(1400)
+	MouseClick, , PartyOK[1].x, PartyOK[1].y    		; OK
+	Sleep 5450
+	Gosub autoAttack
+	Return
 
 ; (Member, skill1, skill2, skill3, skill4)
 TeamRotation(Member, skill1, skill2, skill3, skill4){
@@ -432,7 +559,7 @@ TeamRotation(Member, skill1, skill2, skill3, skill4){
 		Sleep randomDelay(6300)	
 	}
 	if(Member != 1){ 				; Hit back only after MC has been finished
-		sleep 150
+		Sleep 150
 		MouseClick, , Attack[2].x, Attack[2].y	; Click Back
 		Sleep 150
 	}
@@ -464,7 +591,38 @@ QueueSkill(skill, n){
 	}
 }
 
-l:: ; reload script.
+; Testing control click
+TeamRotationCC(Member, skill1, skill2, skill3, skill4){
+	global Character
+	global Attack
+	global StrikeTime
+
+	if(Member < 1 or Member > 4){ 			; Base case, Must be a valid member, ignore otherwise
+		Return
+	}		
+	if(StrikeTime = 1 && Member = 1){ 		; If Strike time. Attack immediately, refresh.
+		MouseClick, , Attack[1].x, Attack[1].y	; *Click* {ATTACK} 
+		Sleep 150
+		send ^{f5}
+		Sleep randomDelay(6300)	
+	}
+	if(Member != 1){ 				; Hit back only after MC has been finished
+		sleep 150
+		MouseClick, , Attack[2].x, Attack[2].y	; Click Back
+		Sleep 150
+	}
+	Sleep 100
+	MouseClick, , Character[Member].x, Character[Member].y			; click portrait
+	Sleep 50
+	MouseClick, , Character[Member].x, Character[Member].y
+	Sleep 50
+	QueueSkill(skill1, 1)				; Sleep -> click skill
+	QueueSkill(skill2, 2)
+	QueueSkill(skill3, 3)
+	QueueSkill(skill4, 4) 
+}
+
+
+l:: 	; reload script.
 	Reload
 	Return
-
